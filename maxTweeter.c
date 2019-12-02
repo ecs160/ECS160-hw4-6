@@ -29,7 +29,6 @@ int main(int argc, char* argv[]){
     if (argc == 2){
         csv_file = fopen(argv[1],"r");
         if (csv_file == NULL) {
-            //printf("Error 1\n");
             goto error;
         }
     }
@@ -41,7 +40,6 @@ int main(int argc, char* argv[]){
     num_char = getline(&buffer,&buffer_size,csv_file);
     // If we read more than max num of chars or read nothing, then return invalid
     if (num_char > LINE_MAX_CHAR || num_char == -1){
-        // Todo: Free buffer?
         goto cf_error;
     }
     //printf("Read %zd characters\n", num_char);
@@ -51,7 +49,6 @@ int main(int argc, char* argv[]){
     bool name_quotes = false;
     location = findNameHeader(buffer,num_char,&num_cols,&name_quotes);
     if (location == -1){
-        // Todo: Free buffer?
         goto cf_error;
     }
     //printf("Found name at: %d\n",location);
@@ -96,11 +93,8 @@ int main(int argc, char* argv[]){
 
     fclose(csv_file);
     free(tweeters);
-    printf("File completed successfully!\n");
     return 0;
 
-    free_error:
-        free(tweeters);
     cf_error:
         fclose(csv_file);
     error:
@@ -178,6 +172,14 @@ int findNameHeader(char *buffer, int buf_length, int* columns, bool* name_quoted
 }
 
 int splitColumns(char *buffer, int buf_length, char ***column_array, int *column_array_size){
+    /* Function takes 4 arguments:
+     * @buffer: A string containing the current line from the buffer
+     * @buf_length: An int containing the length of @buffer
+     * @column_array: A pointer to a string array which will contain the line in split form
+     * @column_array_size: A pointer to an int which will contain the length of @column_array
+     * Function gets the current line and splits it into an array where each column is a new index.
+     * Returns 0 on success, -1 on failure.
+     * */
 
     int column_count = 0;
     int cur_column_count = 0;
@@ -222,18 +224,16 @@ int splitColumns(char *buffer, int buf_length, char ***column_array, int *column
 }
 
 int parseLine(char *buffer, int buf_length, int columns, int location, char tweeter[LINE_MAX_CHAR + 1], bool name_quoted){
-    /* Function takes 5 input parameters:
+    /* Function takes 6 input parameters:
      * @buffer: A string containing the contents of the line.
      * @buf_length: The length of the line string.
      * @columns: The number of columns obtained from the header.
      * @location: The index of the column which contains the tweeters
      * @tweeter: A pointer to a string which stores the tweeter name.
+     * @name_quoted: A boolean indicating whether name was surrounded by quotes
      * Function goes through the line, making sure its formatting and column count match the requirements.
      * If the line is valid, it will extract the name in the @location, and store it in @tweeter.
      * Returns -1 on failure, 0 on success.*/
-
-    //looks for name and makes sure names are in quotes or not
-    // checks column count matches and formatting of quotes is valid in other columns
 
     char **column_array = NULL;
     int column_array_size = 0;
