@@ -48,10 +48,9 @@ int main(int argc, char* argv[]){
     int location = 0, num_cols = 0;
     bool name_quotes = false;
     location = findNameHeader(buffer,num_char,&num_cols,&name_quotes);
-    if (location == -1){
+    if (location == -1) {
         goto cf_error;
     }
-    //printf("Found name at: %d\n",location);
 
     // Read every line in the file
     num_char = getline(&buffer,&buffer_size,csv_file);
@@ -81,7 +80,6 @@ int main(int argc, char* argv[]){
 
         num_char = getline(&buffer,&buffer_size,csv_file);
     }
-    //printf("Lines read after header: %d\n", line_count);
 
     // Print all the top tweeters
     for (int i = 0; i < tweeters_count; i++){
@@ -141,14 +139,14 @@ int findNameHeader(char *buffer, int buf_length, int* columns, bool* name_quoted
             for (int j = 1; j < (strlen(current) - 1); j++){
                 current[j - 1] = current[j];
             }
-            // Set last quote to \0
+            // Set last chars to \0
             current[strlen(current) - 2] = '\0';
         }
-
         // If we have a lone quotation mark at the start or end, return 0.
-        if (current[0] == '"' || (strlen(current) > 0 && current[strlen(current) - 1] == '"')){
+        else if (current[0] == '"' || (strlen(current) > 0 && current[strlen(current) - 1] == '"')){
             return -1;
         }
+
         if (strcmp("name",current) == 0){
             if (foundQuotes){ (*name_quoted) = true;}
             name_index = i;
@@ -197,6 +195,9 @@ int splitColumns(char *buffer, int buf_length, char ***column_array, int *column
         }
         if (buffer[i] != ','){
             temp[cur_column_count] = buffer[i];
+            if (buffer[i] == '\n'){
+                temp[cur_column_count] = '\0';
+            }
             cur_column_count++;
             if (i == buf_length - 1){
                 goto finalize;
@@ -265,7 +266,7 @@ int parseLine(char *buffer, int buf_length, int columns, int location, char twee
             for (int j = 1; j < (strlen(current) - 1); j++){
                 current[j - 1] = current[j];
             }
-            // Set last quote to \0
+            // Set last chars to \0
             current[strlen(current) - 2] = '\0';
         }
 
