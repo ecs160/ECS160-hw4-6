@@ -1,2 +1,1 @@
-# ECS160-hw4
-Fuzz testing homework
+Irvin Leshchinsky and Adam Hashoush 
